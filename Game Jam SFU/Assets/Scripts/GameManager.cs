@@ -1,12 +1,12 @@
-public GameObject rhythmPromptPrefab;
-public Transform promptParent;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
     public UIManager ui;
+    public GameObject rhythmPromptPrefab;
+    public Transform promptParent;
 
-    void Awake()
+    private void Awake()
     {
         Instance = this;
     }
@@ -14,10 +14,31 @@ public class GameManager : MonoBehaviour
     public void OnPlayerDeath()
     {
         Debug.Log("Game Over!");
-        // Add game over handling logic here
+
+        // Halt game time
+        Time.timeScale = 0f;
+
+        // Get final stats from RhythmJudge
+        var stats = RhythmJudge.GetFinalStats();
+
+        // Show Game Over screen
+        ui.ShowGameOverScreen(
+            stats.score,
+            stats.maxCombo,
+            stats.perfectCount,
+            stats.goodCount,
+            stats.missCount
+        );
     }
+
     public void OnPipePassed()
     {
         Instantiate(rhythmPromptPrefab, promptParent);
+    }
+
+    public void RestartGame()
+    {
+        Time.timeScale = 1f;
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
     }
 }
