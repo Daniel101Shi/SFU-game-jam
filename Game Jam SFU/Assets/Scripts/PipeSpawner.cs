@@ -75,6 +75,11 @@ public class PipeSpawner : MonoBehaviour
 
     private GameObject GetPipeFromPool()
     {
+        if (pipePrefab == null)
+        {
+            Debug.LogError("PipeSpawner: pipePrefab is not assigned. Please assign a pipe prefab in the Inspector.");
+            return null;
+        }
         foreach (var pipe in pipePool)
             if (!pipe.activeInHierarchy)
                 return pipe;
