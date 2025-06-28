@@ -1,7 +1,23 @@
 public GameObject rhythmPromptPrefab;
 public Transform promptParent;
-
-public void OnPipePassed()
+public class GameManager : MonoBehaviour
 {
-    Instantiate(rhythmPromptPrefab, promptParent);
+    public static GameManager Instance;
+
+    public UIManager ui;
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+    public void OnPlayerDeath()
+    {
+        Debug.Log("Game Over!");
+        // Add game over handling logic here
+    }
+    public void OnPipePassed()
+    {
+        Instantiate(rhythmPromptPrefab, promptParent);
+    }
 }
