@@ -4,7 +4,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float flapForce = 5f;
+    [SerializeField]
+    private float flapForce = 5f;
 
     private Rigidbody2D rb;
     private bool isDead = false;
