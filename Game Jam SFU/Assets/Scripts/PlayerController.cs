@@ -8,7 +8,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float flapForce = 5f;
 
     private Rigidbody2D rb;
-    private bool shouldFlap = false;
     private bool isDead = false;
 
     void Awake()
@@ -24,23 +23,27 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (isDead) return;
+
+        // Capture spacebar press input
         if (Input.GetKeyDown(KeyCode.Space))
             shouldFlap = true;
     }
 
     void FixedUpdate()
     {
-        if (!shouldFlap) return;
-        shouldFlap = false;
-        rb.velocity = new Vector2(rb.velocity.x, 0f);
-        rb.AddForce(Vector2.up * flapForce, ForceMode2D.Impulse);
+        if (shouldFlap)
+        {
+            // Reset vertical velocity before applying force for consistent flaps
+            rb.velocity = new Vector2(rb.velocity.x, 0f);
+            rb.AddForce(Vector2.up * flapForce, ForceMode2D.Impulse);
+            shouldFlap = false; // Reset flag after processing
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isDead) return;
-        if (collision.gameObject.CompareTag("Obstacle") ||
-            collision.gameObject.CompareTag("Ground"))
+        // Check collision tags to determine if player should die
+        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Ground"))
         {
             isDead = true;
             rb.velocity = Vector2.zero;

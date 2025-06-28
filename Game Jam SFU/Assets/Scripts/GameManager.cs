@@ -1,18 +1,10 @@
-// Assets/Scripts/GameManager.cs
-using UnityEngine;
-using UnityEngine.SceneManagement;
-
+public GameObject rhythmPromptPrefab;
+public Transform promptParent;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    [Header("Dev1 References")]
-    public PipeSpawner pipeSpawner;
-    public GameObject gameOverUI;
-
-    [Header("Dev2 Placeholder")]
-    public GameObject rhythmPromptPrefab;
-    public Transform promptParent;
+    public UIManager ui;
 
     void Awake()
     {
@@ -22,22 +14,10 @@ public class GameManager : MonoBehaviour
     public void OnPlayerDeath()
     {
         Debug.Log("Game Over!");
-        pipeSpawner.StopSpawning();
-        gameOverUI.SetActive(true);
+        // Add game over handling logic here
     }
-
     public void OnPipePassed()
     {
         Instantiate(rhythmPromptPrefab, promptParent);
-    }
-
-    public void Restart()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public void Quit()
-    {
-        Application.Quit();
     }
 }
