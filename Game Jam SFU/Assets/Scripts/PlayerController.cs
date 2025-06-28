@@ -45,10 +45,13 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // Collision with pipes or ground
-        isDead = true;
-        rb.velocity = Vector2.zero;
-        // Inform GameManager or play death animation here
-        GameManager.Instance.OnPlayerDeath();
+        // Check collision tags to determine if player should die
+        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Ground"))
+        {
+            isDead = true;
+            rb.velocity = Vector2.zero;
+            // Inform GameManager or play death animation here
+            GameManager.Instance.OnPlayerDeath();
+        }
     }
 }
