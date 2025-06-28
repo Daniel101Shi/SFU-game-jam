@@ -43,22 +43,19 @@ public class GameManager : MonoBehaviour
         // Halt game time
         Time.timeScale = 0f;
         
-        // Get final stats from RhythmJudge if available
-        if (RhythmJudge.Instance != null)
+        // Get final stats from RhythmJudge (removed the Instance check since it's static)
+        var stats = RhythmJudge.GetFinalStats();
+        
+        // Show Game Over screen with stats
+        if (ui != null)
         {
-            var stats = RhythmJudge.GetFinalStats();
-            
-            // Show Game Over screen with stats
-            if (ui != null)
-            {
-                ui.ShowGameOverScreen(
-                    stats.score,
-                    stats.maxCombo,
-                    stats.perfectCount,
-                    stats.goodCount,
-                    stats.missCount
-                );
-            }
+            ui.ShowGameOverScreen(
+                stats.score,
+                stats.maxCombo,
+                stats.perfectCount,
+                stats.goodCount,
+                stats.missCount
+            );
         }
         else
         {

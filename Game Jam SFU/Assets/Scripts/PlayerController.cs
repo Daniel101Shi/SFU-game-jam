@@ -1,13 +1,14 @@
+// Assets/Scripts/PlayerController.cs
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [SerializeField]
-    private float flapForce = 5f;
+    [SerializeField] private float flapForce = 5f;
 
     private Rigidbody2D rb;
+    private bool shouldFlap = false;
     private bool isDead = false;
 
     void Awake()
@@ -15,42 +16,34 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    void Start() 
+    void Start()
     {
-        // Optional: Zero out velocity at start
         rb.linearVelocity = Vector2.zero;
     }
 
     void Update()
     {
         if (isDead) return;
-
-        // Capture spacebar press input
         if (Input.GetKeyDown(KeyCode.Space))
-        {
             shouldFlap = true;
-        }
     }
 
     void FixedUpdate()
     {
-        if (shouldFlap)
-        {
-            // Reset vertical velocity before applying force for consistent flaps
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
-            rb.AddForce(Vector2.up * flapForce, ForceMode2D.Impulse);
-            shouldFlap = false; // Reset flag after processing
-        }
+        if (!shouldFlap) return;
+        shouldFlap = false;
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+        rb.AddForce(Vector2.up * flapForce, ForceMode2D.Impulse);
     }
 
-    void OnCollisionEnter2D(Collision2D _)
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        // Check collision tags to determine if player should die
-        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Ground"))
+        if (isDead) return;
+        if (collision.gameObject.CompareTag("Obstacle") ||
+            collision.gameObject.CompareTag("Ground"))
         {
             isDead = true;
             rb.linearVelocity = Vector2.zero;
-            // Inform GameManager or play death animation here
             GameManager.Instance.OnPlayerDeath();
         }
     }
