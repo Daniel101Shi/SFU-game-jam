@@ -5,4 +5,3 @@ public void OnPipePassed()
 {
     Instantiate(rhythmPromptPrefab, promptParent);
 }
-
