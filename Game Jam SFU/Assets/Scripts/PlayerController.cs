@@ -25,18 +25,22 @@ public class PlayerController : MonoBehaviour
     {
         if (isDead) return;
 
-        // On spacebar press, apply upward force
+        // Capture spacebar press input
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Flap();
+            shouldFlap = true;
         }
     }
 
-    void Flap()
+    void FixedUpdate()
     {
-        // Reset vertical velocity before applying force for consistent flaps
-        rb.velocity = new Vector2(rb.velocity.x, 0f);
-        rb.AddForce(Vector2.up * flapForce, ForceMode2D.Impulse);
+        if (shouldFlap)
+        {
+            // Reset vertical velocity before applying force for consistent flaps
+            rb.velocity = new Vector2(rb.velocity.x, 0f);
+            rb.AddForce(Vector2.up * flapForce, ForceMode2D.Impulse);
+            shouldFlap = false; // Reset flag after processing
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
