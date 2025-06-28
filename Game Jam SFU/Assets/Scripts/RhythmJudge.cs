@@ -4,7 +4,13 @@ public static class RhythmJudge
 {
     private static int score = 0;
     private static int combo = 1;
+    private static int maxCombo = 1;
     private static int hp = 3;
+
+    private static int perfectCount = 0;
+    private static int goodCount = 0;
+    private static int missCount = 0;
+
 
     private const float perfectThreshold = 0.05f;
     private const float goodThreshold = 0.1f;
@@ -35,28 +41,53 @@ public static class RhythmJudge
 
     private static void Score(string grade, int basePoints)
     {
-        Debug.Log($"Rhythm Input: {grade}");
-
         if (grade == "Miss")
+    {
+        combo = 1;
+        hp -= 1;
+        missCount++;
+        if (hp <= 0)
         {
-            combo = 1;
-            hp -= 1;
-            if (hp <= 0)
-            {
-                GameManager.Instance.OnPlayerDeath();
-            }
+            GameManager.Instance.OnPlayerDeath();
         }
-        else
+    }
+    else
+    {
+        score += basePoints * combo;
+        if (grade == "Perfect")
         {
-            score += basePoints * combo;
-            if (grade == "Perfect")
-                combo++;
+            perfectCount++;
+            combo++;
+        }
+        else if (grade == "Good")
+        {
+            goodCount++;
         }
 
-        // Update UI
-        UIManager ui = GameManager.Instance.ui;
-        ui.UpdateScore(score);
-        ui.UpdateCombo(combo);
-        ui.UpdateHP(hp);
+        if (combo > maxCombo)
+            maxCombo = combo;
     }
+
+    }
+    public struct RhythmStats
+    {
+        public int score;
+        public int maxCombo;
+        public int perfectCount;
+        public int goodCount;
+        public int missCount;
+    }
+
+    public static RhythmStats GetFinalStats()
+    {
+        return new RhythmStats
+        {
+            score = score,
+            maxCombo = maxCombo,
+            perfectCount = perfectCount,
+            goodCount = goodCount,
+            missCount = missCount
+        };
+    }
+
 }
