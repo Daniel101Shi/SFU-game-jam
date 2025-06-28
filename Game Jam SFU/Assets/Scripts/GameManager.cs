@@ -26,6 +26,12 @@ public class GameManager : MonoBehaviour
         Instance = this;
     }
 
+    void Start()
+    {
+        // Initialize the HP system and UI at game start
+        RhythmJudge.ResetStats();
+    }
+
     public void OnPlayerDeath()
     {
         Debug.Log("Game Over!");
@@ -40,7 +46,7 @@ public class GameManager : MonoBehaviour
         // Get final stats from RhythmJudge if available
         if (RhythmJudge.Instance != null)
         {
-            var stats = RhythmJudge.Instance.GetFinalStats();
+            var stats = RhythmJudge.GetFinalStats();
             
             // Show Game Over screen with stats
             if (ui != null)
