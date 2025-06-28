@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
     void Start() 
     {
         // Optional: Zero out velocity at start
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
     }
 
     void Update()
@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
         if (shouldFlap)
         {
             // Reset vertical velocity before applying force for consistent flaps
-            rb.velocity = new Vector2(rb.velocity.x, 0f);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
             rb.AddForce(Vector2.up * flapForce, ForceMode2D.Impulse);
             shouldFlap = false; // Reset flag after processing
         }
@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Ground"))
         {
             isDead = true;
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             // Inform GameManager or play death animation here
             GameManager.Instance.OnPlayerDeath();
         }
