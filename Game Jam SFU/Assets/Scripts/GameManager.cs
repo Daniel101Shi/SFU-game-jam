@@ -40,10 +40,7 @@ public class GameManager : MonoBehaviour
         if (pipeSpawner != null)
             pipeSpawner.StopSpawning();
         
-        // Halt game time
-        Time.timeScale = 0f;
-        
-        // Get final stats from RhythmJudge (removed the Instance check since it's static)
+        // Get final stats from RhythmJudge
         var stats = RhythmJudge.GetFinalStats();
         
         // Show Game Over screen with stats
@@ -57,9 +54,23 @@ public class GameManager : MonoBehaviour
                 stats.missCount
             );
         }
+        
+        // Use MenuManager if available
+        MenuManager menuManager = FindObjectOfType<MenuManager>();
+        if (menuManager != null)
+        {
+            menuManager.ShowGameOver(
+                stats.score,
+                stats.maxCombo,
+                stats.perfectCount,
+                stats.goodCount,
+                stats.missCount
+            );
+        }
         else
         {
-            // Fallback to simple game over UI if no rhythm system
+            // Fallback to simple game over UI
+            Time.timeScale = 0f;
             if (gameOverUI != null)
                 gameOverUI.SetActive(true);
         }

@@ -64,6 +64,23 @@ public static class RhythmJudge
         {
             Debug.LogWarning("HitResultManager not found! Make sure it's in the scene.");
         }
+        
+        // Play sound effect based on result
+        if (AudioManager.Instance != null)
+        {
+            switch (result)
+            {
+                case "Perfect":
+                    AudioManager.Instance.PlaySound("Perfect");
+                    break;
+                case "Good":
+                    AudioManager.Instance.PlaySound("Good");
+                    break;
+                case "Miss":
+                    AudioManager.Instance.PlaySound("Miss");
+                    break;
+            }
+        }
     }
 
     private static void Score(string grade, int basePoints)
