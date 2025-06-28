@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PipeSpawner : MonoBehaviour
@@ -17,17 +19,45 @@ public class PipeSpawner : MonoBehaviour
 
     private float currentSpawnInterval;
     private float currentGapSize;
+    private List<GameObject> pipePool = new List<GameObject>();
+    private bool isSpawning = true;
 
     void Start()
     {
+        if (pipePrefab == null)
+        {
+            Debug.LogError("Pipe prefab is not assigned!");
+            return;
+        }
+
+        if (!pipePrefab.GetComponent<Collider2D>())
+        {
+            Debug.LogWarning("Pipe prefab is missing a Collider2D component!");
+        }
+
         currentSpawnInterval = initialSpawnInterval;
         currentGapSize = maxGapSize;
+
+        // Initialize the object pool
+        int initialPoolSize = 5;
+        for (int i = 0; i < initialPoolSize; i++)
+        {
+            GameObject newPipe = Instantiate(pipePrefab);
+            newPipe.SetActive(false);
+            pipePool.Add(newPipe);
+        }
+
         StartCoroutine(SpawnPipesRoutine());
+    }
+
+    void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     private IEnumerator SpawnPipesRoutine()
     {
-        while (true)
+        while (isSpawning)
         {
             SpawnPipePair();
             
@@ -41,40 +71,53 @@ public class PipeSpawner : MonoBehaviour
 
     private void SpawnPipePair()
     {
-        // Random vertical center position within a safe range
         float centerY = Random.Range(-1f, 1f);
-
-        // Calculate top and bottom positions
         float halfGap = currentGapSize * 0.5f;
         Vector3 topPos = new Vector3(spawnXPosition, centerY + halfGap, 0f);
         Vector3 bottomPos = new Vector3(spawnXPosition, centerY - halfGap, 0f);
 
-        // Spawn pipes from pool
         GameObject topPipe = GetPipeFromPool();
-        topPipe.transform.position = topPos;
-        topPipe.transform.rotation = Quaternion.Euler(0, 0, 180);
-        topPipe.SetActive(true);
+        if (topPipe != null)
+        {
+            topPipe.transform.position = topPos;
+            topPipe.transform.rotation = Quaternion.Euler(0, 0, 180);
+            topPipe.SetActive(true);
+        }
 
         GameObject bottomPipe = GetPipeFromPool();
-        bottomPipe.transform.position = bottomPos;
-        bottomPipe.transform.rotation = Quaternion.identity;
-        bottomPipe.SetActive(true);
-    }
-}
-
-private GameObject GetPipeFromPool()
-{
-    foreach (GameObject pipe in pipePool)
-    {
-        if (!pipe.activeInHierarchy)
+        if (bottomPipe != null)
         {
-            return pipe;
+            bottomPipe.transform.position = bottomPos;
+            bottomPipe.transform.rotation = Quaternion.identity;
+            bottomPipe.SetActive(true);
         }
     }
 
-    // If no inactive pipes are available, instantiate a new one
-    GameObject newPipe = Instantiate(pipePrefab);
-    newPipe.SetActive(false);
-    pipePool.Add(newPipe);
-    return newPipe;
+    private GameObject GetPipeFromPool()
+    {
+        if (pipePrefab == null)
+        {
+            Debug.LogError("Pipe prefab is not assigned in PipeSpawner!");
+            return null;
+        }
+
+        foreach (GameObject pipe in pipePool)
+        {
+            if (!pipe.activeInHierarchy)
+            {
+                return pipe;
+            }
+        }
+
+        // If no inactive pipes are available, instantiate a new one
+        GameObject newPipe = Instantiate(pipePrefab);
+        newPipe.SetActive(false);
+        pipePool.Add(newPipe);
+        return newPipe;
+    }
+
+    public void StopSpawning()
+    {
+        isSpawning = false;
+    }
 }
