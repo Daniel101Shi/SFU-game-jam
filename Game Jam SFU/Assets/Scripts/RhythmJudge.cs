@@ -11,11 +11,11 @@ public static class RhythmJudge
     private static int goodCount = 0;
     private static int missCount = 0;
 
-
     private const float perfectThreshold = 0.05f;
     private const float goodThreshold = 0.1f;
 
-    public static void EvulateTiming(float distance, RhythmPrompt prompt)
+    // Fixed method name: EvaluateTiming (was EvulateTiming)
+    public static void EvaluateTiming(float distance, RhythmPrompt prompt)
     {
         if (distance < perfectThreshold)
         {
@@ -42,33 +42,65 @@ public static class RhythmJudge
     private static void Score(string grade, int basePoints)
     {
         if (grade == "Miss")
+        {
+            combo = 1;
+            hp -= 1;
+            missCount++;
+            
+            // Update UI immediately
+            UpdateUI();
+            
+            if (hp <= 0)
+            {
+                GameManager.Instance.OnPlayerDeath();
+            }
+        }
+        else
+        {
+            score += basePoints * combo;
+            if (grade == "Perfect")
+            {
+                perfectCount++;
+                combo++;
+            }
+            else if (grade == "Good")
+            {
+                goodCount++;
+            }
+
+            if (combo > maxCombo)
+                maxCombo = combo;
+                
+            // Update UI immediately
+            UpdateUI();
+        }
+    }
+
+    // New method to update UI in real-time
+    private static void UpdateUI()
     {
+        if (GameManager.Instance != null && GameManager.Instance.ui != null)
+        {
+            GameManager.Instance.ui.UpdateScore(score);
+            GameManager.Instance.ui.UpdateCombo(combo);
+            GameManager.Instance.ui.UpdateHP(hp);
+        }
+    }
+
+    // Method to reset stats when game starts
+    public static void ResetStats()
+    {
+        score = 0;
         combo = 1;
-        hp -= 1;
-        missCount++;
-        if (hp <= 0)
-        {
-            GameManager.Instance.OnPlayerDeath();
-        }
-    }
-    else
-    {
-        score += basePoints * combo;
-        if (grade == "Perfect")
-        {
-            perfectCount++;
-            combo++;
-        }
-        else if (grade == "Good")
-        {
-            goodCount++;
-        }
-
-        if (combo > maxCombo)
-            maxCombo = combo;
+        maxCombo = 1;
+        hp = 3;
+        perfectCount = 0;
+        goodCount = 0;
+        missCount = 0;
+        
+        UpdateUI();
     }
 
-    }
     public struct RhythmStats
     {
         public int score;
@@ -90,4 +122,8 @@ public static class RhythmJudge
         };
     }
 
+    // Getter methods for current values (useful for UI)
+    public static int GetCurrentScore() => score;
+    public static int GetCurrentCombo() => combo;
+    public static int GetCurrentHP() => hp;
 }
