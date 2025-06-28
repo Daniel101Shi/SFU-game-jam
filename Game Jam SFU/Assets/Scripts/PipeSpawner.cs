@@ -49,8 +49,32 @@ public class PipeSpawner : MonoBehaviour
         Vector3 topPos = new Vector3(spawnXPosition, centerY + halfGap, 0f);
         Vector3 bottomPos = new Vector3(spawnXPosition, centerY - halfGap, 0f);
 
-        // Instantiate pipes
-        Instantiate(pipePrefab, topPos, Quaternion.Euler(0, 0, 180));  // flipped pipe
-        Instantiate(pipePrefab, bottomPos, Quaternion.identity);
+        // Spawn pipes from pool
+        GameObject topPipe = GetPipeFromPool();
+        topPipe.transform.position = topPos;
+        topPipe.transform.rotation = Quaternion.Euler(0, 0, 180);
+        topPipe.SetActive(true);
+
+        GameObject bottomPipe = GetPipeFromPool();
+        bottomPipe.transform.position = bottomPos;
+        bottomPipe.transform.rotation = Quaternion.identity;
+        bottomPipe.SetActive(true);
     }
+}
+
+private GameObject GetPipeFromPool()
+{
+    foreach (GameObject pipe in pipePool)
+    {
+        if (!pipe.activeInHierarchy)
+        {
+            return pipe;
+        }
+    }
+
+    // If no inactive pipes are available, instantiate a new one
+    GameObject newPipe = Instantiate(pipePrefab);
+    newPipe.SetActive(false);
+    pipePool.Add(newPipe);
+    return newPipe;
 }
