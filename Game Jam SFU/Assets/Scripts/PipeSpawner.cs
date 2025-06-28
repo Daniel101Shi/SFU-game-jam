@@ -1,49 +1,56 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController : MonoBehaviour
+public class PipeSpawner : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    public float flapForce = 5f;
+    [Header("Spawn Settings")]
+    public GameObject pipePrefab;           // Assign your Pipe prefab here
+    public float initialSpawnInterval = 2f; // Time between spawns at start
+    public float minGapSize = 2f;           // Minimum vertical gap
+    public float maxGapSize = 3.5f;         // Maximum vertical gap
+    public float spawnXPosition = 10f;      // X position where pipes appear
 
-    private Rigidbody2D rb;
-    private bool isDead = false;
+    [Header("Difficulty Scaling")]
+    public float spawnIntervalDecrease = 0.01f;  // How much to shrink interval per spawn
+    public float minSpawnInterval = 1f;          // Hard cap on spawn frequency
+    public float gapShrinkRate = 0.005f;         // How much to shrink gap size per spawn
+    public float minGapSizeLimit = 1.5f;         // Hard cap on minimum gap
 
-    void Awake()
+    private float currentSpawnInterval;
+    private float currentGapSize;
+
+    void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        currentSpawnInterval = initialSpawnInterval;
+        currentGapSize = maxGapSize;
+        StartCoroutine(SpawnPipesRoutine());
     }
 
-    void Start() 
+    private IEnumerator SpawnPipesRoutine()
     {
-        // Optional: Zero out velocity at start
-        rb.velocity = Vector2.zero;
-    }
-
-    void Update()
-    {
-        if (isDead) return;
-
-        // On spacebar press, apply upward force
-        if (Input.GetKeyDown(KeyCode.Space))
+        while (true)
         {
-            Flap();
+            SpawnPipePair();
+            
+            // Scale difficulty
+            currentSpawnInterval = Mathf.Max(minSpawnInterval, currentSpawnInterval - spawnIntervalDecrease);
+            currentGapSize = Mathf.Max(minGapSizeLimit, currentGapSize - gapShrinkRate);
+
+            yield return new WaitForSeconds(currentSpawnInterval);
         }
     }
 
-    void Flap()
+    private void SpawnPipePair()
     {
-        // Reset vertical velocity before applying force for consistent flaps
-        rb.velocity = new Vector2(rb.velocity.x, 0f);
-        rb.AddForce(Vector2.up * flapForce, ForceMode2D.Impulse);
-    }
+        // Random vertical center position within a safe range
+        float centerY = Random.Range(-1f, 1f);
 
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Collision with pipes or ground
-        isDead = true;
-        rb.velocity = Vector2.zero;
-        // Inform GameManager or play death animation here
-        GameManager.Instance.OnPlayerDeath();
+        // Calculate top and bottom positions
+        float halfGap = currentGapSize * 0.5f;
+        Vector3 topPos = new Vector3(spawnXPosition, centerY + halfGap, 0f);
+        Vector3 bottomPos = new Vector3(spawnXPosition, centerY - halfGap, 0f);
+
+        // Instantiate pipes
+        Instantiate(pipePrefab, topPos, Quaternion.Euler(0, 0, 180));  // flipped pipe
+        Instantiate(pipePrefab, bottomPos, Quaternion.identity);
     }
 }
