@@ -59,4 +59,25 @@ public static class RhythmJudge
         ui.UpdateCombo(combo);
         ui.UpdateHP(hp);
     }
+    public struct RhythmStats
+    {
+        public int score;
+        public int maxCombo;
+        public int perfectCount;
+        public int goodCount;
+        public int missCount;
+    }
+
+    public static RhythmStats GetFinalStats()
+    {
+        return new RhythmStats
+        {
+            score = score,
+            maxCombo = maxCombo,
+            perfectCount = perfectCount,
+            goodCount = goodCount,
+            missCount = missCount
+        };
+    }
+
 }
