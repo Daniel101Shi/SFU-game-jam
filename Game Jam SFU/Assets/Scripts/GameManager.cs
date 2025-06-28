@@ -36,9 +36,12 @@ public class GameManager : MonoBehaviour
         Instantiate(rhythmPromptPrefab, promptParent);
     }
 
+    [SerializeField]
+    private string gameSceneName = "Game";
+
     public void RestartGame()
     {
         Time.timeScale = 1f;
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
+        UnityEngine.SceneManagement.SceneManager.LoadScene(gameSceneName);
     }
 }
