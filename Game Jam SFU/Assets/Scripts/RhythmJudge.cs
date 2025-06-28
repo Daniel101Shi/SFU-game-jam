@@ -47,8 +47,7 @@ public static class RhythmJudge
             hp -= 1;
             missCount++;
             
-            // Update UI immediately
-            UpdateUI();
+            // Update UI moved to the end of the method
             
             if (hp <= 0)
             {
