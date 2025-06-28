@@ -14,29 +14,56 @@ public static class RhythmJudge
     private const float perfectThreshold = 0.05f;
     private const float goodThreshold = 0.1f;
 
-    // Fixed method name: EvaluateTiming (was EvulateTiming)
     public static void EvaluateTiming(float distance, RhythmPrompt prompt)
     {
+        string result;
+        int basePoints;
+
         if (distance < perfectThreshold)
         {
-            Score("Perfect", 3);
+            result = "Perfect";
+            basePoints = 3;
         }
         else if (distance < goodThreshold)
         {
-            Score("Good", 1);
+            result = "Good";
+            basePoints = 1;
         }
         else
         {
-            Score("Miss", 0);
+            result = "Miss";
+            basePoints = 0;
         }
 
+        // Show hit result at prompt position
+        ShowHitResult(result, prompt.transform.position);
+        
+        // Process the score
+        Score(result, basePoints);
+        
         prompt.CleanUp();
     }
 
     public static void Missed(RhythmPrompt prompt)
     {
+        // Show miss result at prompt position
+        ShowHitResult("Miss", prompt.transform.position);
+        
         Score("Miss", 0);
         prompt.CleanUp();
+    }
+
+    private static void ShowHitResult(string result, Vector3 position)
+    {
+        // Display the hit result using the manager
+        if (HitResultManager.Instance != null)
+        {
+            HitResultManager.Instance.ShowHitResult(result, position);
+        }
+        else
+        {
+            Debug.LogWarning("HitResultManager not found! Make sure it's in the scene.");
+        }
     }
 
     private static void Score(string grade, int basePoints)
@@ -47,7 +74,8 @@ public static class RhythmJudge
             hp -= 1;
             missCount++;
             
-            // Update UI moved to the end of the method
+            // Update UI after processing miss
+            UpdateUI();
             
             if (hp <= 0)
             {
@@ -75,7 +103,7 @@ public static class RhythmJudge
         }
     }
 
-    // New method to update UI in real-time
+    // Method to update UI in real-time
     private static void UpdateUI()
     {
         if (GameManager.Instance != null && GameManager.Instance.ui != null)
