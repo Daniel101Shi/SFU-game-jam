@@ -12,7 +12,12 @@
 sysinfo.txt
 # Unity3D generated meta files
 *.pidb.meta
+# Unity Logs
+[Ll]ogs/
 *.log
+
+# Unity User Settings
+[Uu]ser[Ss]ettings/
 ###
 # VS/MD solution and project files
 ###
@@ -39,7 +44,4 @@ sysinfo.txt
 Icon?
 ehthumbs.db
 Thumbs.db
-Game Jam SFU/Logs/AssetImportWorker0.log
-Game Jam SFU/Logs/AssetImportWorker1.log
-Game Jam SFU/Logs/shadercompiler-UnityShaderCompiler-0.log
-Game Jam SFU/UserSettings/Layouts/default-6000.dwlt
+
