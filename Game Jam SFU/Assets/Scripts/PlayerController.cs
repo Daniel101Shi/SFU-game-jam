@@ -43,7 +43,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnCollisionEnter2D(Collision2D _)
     {
         // Check collision tags to determine if player should die
         if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Ground"))
